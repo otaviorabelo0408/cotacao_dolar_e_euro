@@ -11,21 +11,16 @@ from matplotlib.pyplot import (plot, ylabel, xlabel, title, show, legend, axis)
 
 # Iniciando cotação:
 
-d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
-e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
-dolar = Dolar(d)
-euro = Euro(e)
 lista_dolar = list()
 lista_euro = list()
 lista_tempo = list()
 dolar_plotagem = list()
 euro_plotagem = list()
-lista_tempo.append(datetime.now().strftime("%H:%M:%S"))
 
 
 # Atualizando cotação:
 
-def atualiza(dolar_obj, euro_obj, d_1, e_1):
+def atualiza():
     """Função que imprime a primeira cotação
     catalogada e atualiza os valores das
     cotações."""
@@ -48,31 +43,35 @@ def atualiza(dolar_obj, euro_obj, d_1, e_1):
             sleep(5)
             exit(0)
         else:
-            print(f"Cotação do dólar: {dolar_obj.cotacao}")
-            print(f"Cotação do euro: {euro_obj.cotacao}")
-            lista_dolar.append(d_1)
-            lista_euro.append(e_1)
+            d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
+            e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
+            dolar = Dolar(d)
+            euro = Euro(e)
+            print(f"Cotação do dólar: {dolar.cotacao}")
+            print(f"Cotação do euro: {euro.cotacao}")
+            lista_dolar.append(d)
+            lista_euro.append(e)
             lista_tempo.append(datetime.now().strftime("%H:%M"))
-            dolar_plotagem.append(d_1)
-            euro_plotagem.append(e_1)
+            dolar_plotagem.append(d)
+            euro_plotagem.append(e)
             while datetime.now().strftime("%H:%M") != "17:00":
                 print("\nAguarde pela próxima atualização.")
                 for i in range(30, 0, -1):
                     sleep(1)
                 system("clear")
-                d_i = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
-                e_i = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
-                dolar_obj.cotacao = d_i
-                euro_obj.cotacao = e_i
-                lista_dolar.append(d_i)
-                lista_euro.append(e_i)
+                d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
+                e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
+                dolar.cotacao = d
+                euro.cotacao = e
+                lista_dolar.append(d)
+                lista_euro.append(e)
                 if int(datetime.now().strftime("%M")) == 0 or int(datetime.now().strftime("%M")) == 30:
                     if datetime.now().strftime("%H:%M") != lista_tempo[0]:
                         lista_tempo.append(datetime.now().strftime("%H:%M"))
-                        dolar_plotagem.append(d_i)
-                        euro_plotagem.append(e_i)
-                print(f"Cotação do dólar: {dolar_obj.cotacao}")
-                print(f"Cotação do euro: {euro_obj.cotacao}")
+                        dolar_plotagem.append(d)
+                        euro_plotagem.append(e)
+                print(f"Cotação do dólar: {dolar.cotacao}")
+                print(f"Cotação do euro: {euro.cotacao}")
             menu()
 
 
@@ -85,11 +84,11 @@ def arquiva_dados():
         arq.writerow([date.today(), "Euro", float(f"{mean(lista_dolar):.4f}")])
 
 
-def plotagem(legenda, dados_1, dados_2):
+def plotagem():
     """Função que plota um gráfico de acordo com a
     solicitação do usuário."""
-    plot(legenda, dados_1, color='red')
-    plot(legenda, dados_2, color='green')
+    plot(lista_tempo, dolar_plotagem, color='red')
+    plot(lista_tempo, euro_plotagem, color='green')
     xlabel("Horário da cotação")
     ylabel("Valor alcançado")
     title(f"Variação da cotação do dólar e do euro com o tempo.")
@@ -119,13 +118,13 @@ def menu():
                 sleep(5)
                 exit(0)
             elif opc == 2:
-                plotagem(lista_tempo, dolar_plotagem, euro_plotagem)
+                plotagem()
                 print("Aguarde 5 segundos pelo encerramento do programa.")
                 sleep(5)
                 exit(0)
             elif opc == 3:
                 arquiva_dados()
-                plotagem(lista_tempo, dolar_plotagem, euro_plotagem)
+                plotagem()
                 print("Dados arquivados com sucesso. Aguarde 5 segundos pelo encerramento do programa.")
                 sleep(5)
                 exit(0)
