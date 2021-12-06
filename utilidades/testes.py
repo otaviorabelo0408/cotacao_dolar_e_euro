@@ -1,7 +1,8 @@
 # Arquivo destinado aos testes realizados sobre esse projeto:
 
-from unittest import TestCase, main
+from unittest import (TestCase, main)
 from utilidades.objetos import *
+from requests import get
 
 
 class TesteClasse(TestCase):
