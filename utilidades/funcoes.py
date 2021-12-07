@@ -7,7 +7,7 @@ from os import system
 from csv import writer
 from datetime import (date, datetime)
 from statistics import mean
-from matplotlib.pyplot import (plot, ylabel, xlabel, title, show, legend, axis)
+from matplotlib.pyplot import (plot, ylabel, xlabel, title, show, legend)
 
 # Iniciando cotação:
 
@@ -35,10 +35,8 @@ def atualiza():
             print("Encerrando programa. Aguarde 5 segundos.")
             sleep(5)
             exit(0)
-        elif int(datetime.now().strftime("%H")) > 17 or (
-                int(datetime.now().strftime("%H")) == 17 and int(datetime.now().strftime("%M")) != 0
-        ):
-            print("O mercado funciona apenas até às 17:00. Volte no próximo dia útil!")
+        elif int(datetime.now().strftime("%H")) >= 18:
+            print("O mercado funciona apenas até às 18:00. Volte no próximo dia útil!")
             print("Encerrando programa. Aguarde 5 segundos.")
             sleep(5)
             exit(0)
@@ -54,22 +52,22 @@ def atualiza():
             lista_tempo.append(datetime.now().strftime("%H:%M"))
             dolar_plotagem.append(d)
             euro_plotagem.append(e)
-            while datetime.now().strftime("%H:%M") != "17:00":
+            while datetime.now().strftime("%H:%M") != "18:00":
                 print("\nAguarde pela próxima atualização.")
                 for i in range(30, 0, -1):
                     sleep(1)
                 system("clear")
-                d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
-                e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
-                dolar.cotacao = d
-                euro.cotacao = e
-                lista_dolar.append(d)
-                lista_euro.append(e)
+                d_n = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
+                e_n = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
+                dolar.cotacao = d_n
+                euro.cotacao = e_n
+                lista_dolar.append(d_n)
+                lista_euro.append(e_n)
                 if int(datetime.now().strftime("%M")) == 0 or int(datetime.now().strftime("%M")) == 30:
-                    if datetime.now().strftime("%H:%M") != lista_tempo[0]:
+                    if datetime.now().strftime("%H:%M") != lista_tempo[len(lista_tempo) - 1]:
                         lista_tempo.append(datetime.now().strftime("%H:%M"))
-                        dolar_plotagem.append(d)
-                        euro_plotagem.append(e)
+                        dolar_plotagem.append(d_n)
+                        euro_plotagem.append(e_n)
                 print(f"Cotação do dólar: {dolar.cotacao}")
                 print(f"Cotação do euro: {euro.cotacao}")
             menu()
@@ -80,20 +78,18 @@ def arquiva_dados():
     em um arquivo do tipo .csv."""
     with open("/home/otavio/PycharmProjects/cotacao/cotacoes.csv", 'a') as arq:
         arq = writer(arq)
-        arq.writerow([date.today(), "Dólar", float(f"{mean(lista_dolar):.4f}")])
-        arq.writerow([date.today(), "Euro", float(f"{mean(lista_dolar):.4f}")])
+        arq.writerow([date.today().strftime("%d/%m/%y"), "Dólar", float(f"{mean(lista_dolar):.4f}")])
+        arq.writerow([date.today().strftime("%d/%m/%y"), "Euro", float(f"{mean(lista_euro):.4f}")])
 
 
-def plotagem():
+def plotagem(moeda, lista, cor):
     """Função que plota um gráfico de acordo com a
     solicitação do usuário."""
-    plot(lista_tempo, dolar_plotagem, color='red')
-    plot(lista_tempo, euro_plotagem, color='green')
+    plot(lista_tempo, lista, color=cor, label=moeda)
     xlabel("Horário da cotação")
-    ylabel("Valor alcançado")
-    title(f"Variação da cotação do dólar e do euro com o tempo.")
+    ylabel("Cotação")
     legend(title='Legenda:', loc='best')
-    axis('equal')
+    title(f"Variação da cotação do {moeda} com o tempo.")
     show()
 
 
@@ -118,13 +114,15 @@ def menu():
                 sleep(5)
                 exit(0)
             elif opc == 2:
-                plotagem()
+                plotagem("Dólar", dolar_plotagem, 'red')
+                plotagem("Euro", euro_plotagem, 'green')
                 print("Aguarde 5 segundos pelo encerramento do programa.")
                 sleep(5)
                 exit(0)
             elif opc == 3:
                 arquiva_dados()
-                plotagem()
+                plotagem("Dólar", dolar_plotagem, 'red')
+                plotagem("Euro", euro_plotagem, 'green')
                 print("Dados arquivados com sucesso. Aguarde 5 segundos pelo encerramento do programa.")
                 sleep(5)
                 exit(0)
