@@ -21,9 +21,9 @@ euro_plotagem = list()
 # Função que apresenta a cotação atual do Dólar e do Euro:
 
 def apresenta_cotacao():
-    """Função que imprime a primeira cotação
-    catalogada e atualiza os valores das
-    cotações."""
+    """Função que imprime as cotações do
+    Dólar e do Euro e atualiza esses valores
+    a cada 30 segundos."""
     if date.today().isoweekday() == 6 or date.today().isoweekday() == 7:
         print("Durante o fim de semana o mercado está fechado!")
         print("Encerrando programa. Aguarde 5 segundos.")
@@ -73,6 +73,8 @@ def apresenta_cotacao():
             menu()
 
 
+# Função destinada ao arquivamento dos dados catalogados:
+
 def arquiva_dados():
     """Função que ariquiva os dados catalogados
     em um arquivo do tipo .csv."""
@@ -81,6 +83,8 @@ def arquiva_dados():
         arq.writerow([date.today().strftime("%d/%m/%y"), "Dólar", f"R${mean(lista_dolar):.4f}"])
         arq.writerow([date.today().strftime("%d/%m/%y"), "Euro", f"R${mean(lista_euro):.4f}"])
 
+
+# Função destinada à plotagem dos gráficos:
 
 def plotagem(moeda, lista, cor):
     """Função que plota um gráfico de acordo com a
@@ -92,6 +96,8 @@ def plotagem(moeda, lista, cor):
     title(f"Variação da cotação do {moeda} com o tempo.")
     show()
 
+
+#Função destinada ao menu final do programa:
 
 def menu():
     """Função que executa o menu final do programa."""
