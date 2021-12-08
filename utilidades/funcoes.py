@@ -3,7 +3,7 @@
 from utilidades.objetos import *
 from requests import get
 from time import sleep
-from os import system
+from os import (system, name)
 from csv import writer
 from datetime import (date, datetime)
 from statistics import mean
@@ -56,7 +56,7 @@ def apresenta_cotacao():
                 print("\nAguarde pela próxima atualização.")
                 for i in range(30, 0, -1):
                     sleep(1)
-                system("clear")
+                limpa_tela()
                 d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
                 e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
                 dolar.cotacao = d
@@ -97,11 +97,11 @@ def plotagem(moeda, lista, cor):
     show()
 
 
-#Função destinada ao menu final do programa:
+# Função destinada ao menu final do programa:
 
 def menu():
     """Função que executa o menu final do programa."""
-    system("clear")
+    limpa_tela()
     print("Bem vindo ao menu final do programa:\n")
     while True:
         try:
@@ -113,7 +113,7 @@ def menu():
             print("Opção 3: realiza as duas ações acima e encerra o programa;")
             print("Opção 4: apenas encerra o programa.")
             opc = int(input("Escolha sua opção: "))
-            system("clear")
+            limpa_tela()
             if opc == 1:
                 arquiva_dados()
                 print("Dados arquivados com sucesso. Aguarde 5 segundos pelo encerramento do programa.")
@@ -139,5 +139,17 @@ def menu():
             else:
                 print("Opção invállida. Tente novamente!")
         except ValueError:
-            system("clear")
+            limpa_tela()
             print("Opção inválida. Tente novamente!")
+
+
+# Função destinada à limpar a tela de acordo com o sistema operacional:
+
+def limpa_tela():
+    """Função que limpa a tela do terminal
+    de acordo com o sistema operacional
+    vigente na máquina."""
+    if name == 'nt':
+        system("cls")
+    else:
+        system("clear")
