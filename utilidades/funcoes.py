@@ -9,7 +9,7 @@ from datetime import (date, datetime)
 from statistics import mean
 from matplotlib.pyplot import (plot, ylabel, xlabel, title, show, legend)
 
-# Iniciando cotação:
+# Inicializando listas:
 
 lista_dolar = list()
 lista_euro = list()
@@ -18,9 +18,9 @@ dolar_plotagem = list()
 euro_plotagem = list()
 
 
-# Atualizando cotação:
+# Função que apresenta a cotação atual do Dólar e do Euro:
 
-def atualiza():
+def apresenta_cotacao():
     """Função que imprime a primeira cotação
     catalogada e atualiza os valores das
     cotações."""
@@ -57,17 +57,17 @@ def atualiza():
                 for i in range(30, 0, -1):
                     sleep(1)
                 system("clear")
-                d_n = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
-                e_n = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
-                dolar.cotacao = d_n
-                euro.cotacao = e_n
-                lista_dolar.append(d_n)
-                lista_euro.append(e_n)
+                d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
+                e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
+                dolar.cotacao = d
+                euro.cotacao = e
+                lista_dolar.append(d)
+                lista_euro.append(e)
                 if int(datetime.now().strftime("%M")) == 0 or int(datetime.now().strftime("%M")) == 30:
                     if datetime.now().strftime("%H:%M") != lista_tempo[len(lista_tempo) - 1]:
                         lista_tempo.append(datetime.now().strftime("%H:%M"))
-                        dolar_plotagem.append(d_n)
-                        euro_plotagem.append(e_n)
+                        dolar_plotagem.append(d)
+                        euro_plotagem.append(e)
                 print(f"Cotação do dólar: {dolar.cotacao}")
                 print(f"Cotação do euro: {euro.cotacao}")
             menu()
@@ -78,17 +78,17 @@ def arquiva_dados():
     em um arquivo do tipo .csv."""
     with open("/home/otavio/PycharmProjects/cotacao/cotacoes.csv", 'a') as arq:
         arq = writer(arq)
-        arq.writerow([date.today().strftime("%d/%m/%y"), "Dólar", float(f"{mean(lista_dolar):.4f}")])
-        arq.writerow([date.today().strftime("%d/%m/%y"), "Euro", float(f"{mean(lista_euro):.4f}")])
+        arq.writerow([date.today().strftime("%d/%m/%y"), "Dólar", f"R${mean(lista_dolar):.4f}"])
+        arq.writerow([date.today().strftime("%d/%m/%y"), "Euro", f"R${mean(lista_euro):.4f}"])
 
 
 def plotagem(moeda, lista, cor):
     """Função que plota um gráfico de acordo com a
     solicitação do usuário."""
     plot(lista_tempo, lista, color=cor, label=moeda)
-    xlabel("Horário da cotação")
-    ylabel("Cotação")
-    legend(title='Legenda:', loc='best')
+    xlabel("Horários das cotações")
+    ylabel("Valores medidos")
+    legend(title='Moeda:', loc='best')
     title(f"Variação da cotação do {moeda} com o tempo.")
     show()
 
