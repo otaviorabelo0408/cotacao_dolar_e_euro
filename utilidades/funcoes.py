@@ -45,8 +45,8 @@ def apresenta_cotacao():
             e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
             dolar = Dolar(d)
             euro = Euro(e)
-            print(f"Cotação do dólar: {dolar.cotacao}")
-            print(f"Cotação do euro: {euro.cotacao}")
+            print(f"Cotação do Dólar: {dolar.cotacao}")
+            print(f"Cotação do Euro: {euro.cotacao}")
             lista_dolar.append(d)
             lista_euro.append(e)
             lista_tempo.append(datetime.now().strftime("%H:%M"))
@@ -68,8 +68,8 @@ def apresenta_cotacao():
                         lista_tempo.append(datetime.now().strftime("%H:%M"))
                         dolar_plotagem.append(d)
                         euro_plotagem.append(e)
-                print(f"Cotação do dólar: {dolar.cotacao}")
-                print(f"Cotação do euro: {euro.cotacao}")
+                print(f"Cotação do Dólar: {dolar.cotacao}")
+                print(f"Cotação do Euro: {euro.cotacao}")
             menu()
 
 
