@@ -78,7 +78,7 @@ def apresenta_cotacao():
 def arquiva_dados():
     """Função que ariquiva os dados catalogados
     em um arquivo do tipo .csv."""
-    with open("/home/otavio/PycharmProjects/cotacao/cotacoes.csv", 'a') as arq:
+    with open("cotacoes.csv", 'a') as arq:
         arq = writer(arq)
         arq.writerow([date.today().strftime("%d/%m/%y"), "Dólar", f"R${mean(lista_dolar):.4f}"])
         arq.writerow([date.today().strftime("%d/%m/%y"), "Euro", f"R${mean(lista_euro):.4f}"])
