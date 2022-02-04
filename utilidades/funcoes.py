@@ -30,47 +30,47 @@ def apresenta_cotacao():
         sleep(5)
         exit(0)
     else:
-        if int(datetime.now().strftime("%H")) < 10:
-            print("O mercado funciona apenas a partir das 10:00. Volte mais tarde!")
+        if int(datetime.now().strftime("%H")) >= 18:
+            print("O mercado funciona apenas até às 18h. Volte no próximo dia útil!")
             print("Encerrando programa. Aguarde 5 segundos.")
             sleep(5)
             exit(0)
-        elif int(datetime.now().strftime("%H")) >= 18:
-            print("O mercado funciona apenas até às 18:00. Volte no próximo dia útil!")
-            print("Encerrando programa. Aguarde 5 segundos.")
-            sleep(5)
-            exit(0)
-        else:
+        elif int(datetime.now().strftime("%H")) < 10:
+            print("O mercado funciona apenas a partir das 10h.")
+            print("Mantenha o programa aberto até as 10h, e então ele iniciará a cotação automaticamente.")
+            while int(datetime.now().strftime("%H")) < 10:
+                pass
+        d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
+        e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
+        dolar = Dolar(d)
+        euro = Euro(e)
+        limpa_tela()
+        print(f"Cotação do Dólar: {dolar.cotacao}")
+        print(f"Cotação do Euro: {euro.cotacao}")
+        lista_dolar.append(d)
+        lista_euro.append(e)
+        lista_tempo.append(datetime.now().strftime("%H:%M"))
+        dolar_plotagem.append(d)
+        euro_plotagem.append(e)
+        while datetime.now().strftime("%H:%M") != "18:00":
+            print("\nAguarde pela próxima atualização.")
+            for i in range(30, 0, -1):
+                sleep(1)
+            limpa_tela()
             d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
             e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
-            dolar = Dolar(d)
-            euro = Euro(e)
-            print(f"Cotação do Dólar: {dolar.cotacao}")
-            print(f"Cotação do Euro: {euro.cotacao}")
+            dolar.cotacao = d
+            euro.cotacao = e
             lista_dolar.append(d)
             lista_euro.append(e)
-            lista_tempo.append(datetime.now().strftime("%H:%M"))
-            dolar_plotagem.append(d)
-            euro_plotagem.append(e)
-            while datetime.now().strftime("%H:%M") != "18:00":
-                print("\nAguarde pela próxima atualização.")
-                for i in range(30, 0, -1):
-                    sleep(1)
-                limpa_tela()
-                d = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["USDBRL"]["bid"])
-                e = float(get("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL").json()["EURBRL"]["bid"])
-                dolar.cotacao = d
-                euro.cotacao = e
-                lista_dolar.append(d)
-                lista_euro.append(e)
-                if int(datetime.now().strftime("%M")) == 0 or int(datetime.now().strftime("%M")) == 30:
-                    if datetime.now().strftime("%H:%M") != lista_tempo[len(lista_tempo) - 1]:
-                        lista_tempo.append(datetime.now().strftime("%H:%M"))
-                        dolar_plotagem.append(d)
-                        euro_plotagem.append(e)
-                print(f"Cotação do Dólar: {dolar.cotacao}")
-                print(f"Cotação do Euro: {euro.cotacao}")
-            menu()
+            if int(datetime.now().strftime("%M")) == 0 or int(datetime.now().strftime("%M")) == 30:
+                if datetime.now().strftime("%H:%M") != lista_tempo[len(lista_tempo) - 1]:
+                    lista_tempo.append(datetime.now().strftime("%H:%M"))
+                    dolar_plotagem.append(d)
+                    euro_plotagem.append(e)
+            print(f"Cotação do Dólar: {dolar.cotacao}")
+            print(f"Cotação do Euro: {euro.cotacao}")
+        menu()
 
 
 # Função destinada ao arquivamento dos dados catalogados:
@@ -78,7 +78,7 @@ def apresenta_cotacao():
 def arquiva_dados():
     """Função que ariquiva os dados catalogados
     em um arquivo do tipo .csv."""
-    with open("cotacoes.csv", 'a') as arq:
+    with open("/home/otavio/PycharmProjects/cotacao/cotacoes.csv", 'a') as arq:
         arq = writer(arq)
         arq.writerow([date.today().strftime("%d/%m/%y"), "Dólar", f"R${mean(lista_dolar):.4f}"])
         arq.writerow([date.today().strftime("%d/%m/%y"), "Euro", f"R${mean(lista_euro):.4f}"])
